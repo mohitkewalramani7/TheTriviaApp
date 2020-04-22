@@ -1,3 +1,9 @@
+
+A Trivia App!
+Data retrieved from here: https://opentdb.com/api_config.php
+
+==========================================================================
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
