@@ -29,17 +29,8 @@ class Questions extends React.Component {
     this.fetchTrivia().then(result => {
       let questionObject = result.results[0];
       let question = questionObject['question'];
-      this.setState({'question': question});
-
-      let incorrectAnswers = questionObject['incorrect_answers'];
-      let correctAnswer = questionObject['correct_answer'];
-
-      let allAnswers = incorrectAnswers.slice();
-      allAnswers.push(correctAnswer);
-      allAnswers = this.shuffleArray(allAnswers);
-      this.setState({'options': allAnswers});
-
-      this.setState({'rightAnswer': correctAnswer});
+      this.setState({'question': this.decodeHtml(question)});
+      this.formatAnswers(questionObject);
     }).catch(err => {
       console.log(err);
     })
@@ -48,6 +39,39 @@ class Questions extends React.Component {
   async fetchTrivia(){
     let response = await fetch('https://opentdb.com/api.php?amount=1');
     return await response.json();
+  }
+
+  /*
+    https://stackoverflow.com/a/41699140
+   */
+  decodeHtml(str){
+    const map =
+      {
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+        '&#039;': "'"
+      };
+    return str.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, function(m) {return map[m];});
+  }
+
+  formatAnswers(questionObject){
+    let incorrectAnswers = questionObject['incorrect_answers'];
+    let correctAnswer = questionObject['correct_answer'];
+    let allAnswers = incorrectAnswers.slice();
+    allAnswers.push(correctAnswer);
+    allAnswers = this.decodeAllAnswers(allAnswers);
+    allAnswers = this.shuffleArray(allAnswers);
+    this.setState({'options': allAnswers});
+    this.setState({'rightAnswer': correctAnswer});
+  }
+
+  decodeAllAnswers(allAnswers){
+    allAnswers.forEach(answer => {
+      return this.decodeHtml(answer);
+    });
+    return allAnswers;
   }
 
   /*
@@ -68,7 +92,9 @@ class Questions extends React.Component {
     if (selectedAnswer === this.state.rightAnswer){
       this.setState({wrongAnswerAlertVisible: false});
       this.setState({rightAnswerAlertVisible: true});
-      this.setQuestion();
+      new Promise(r => setTimeout(r, 1000)).then(_ => {
+        this.setQuestion();
+      });
     }
     else {
       this.setState({wrongAnswerAlertVisible: true});
@@ -80,20 +106,26 @@ class Questions extends React.Component {
       <div>
 
         <Alert
-          style={{visibility: this.state.wrongAnswerAlertVisible ? 'visible': 'hidden'}}
+          style={{
+            display: this.state.wrongAnswerAlertVisible ? "inline-flex" : "none",
+            position: 'absolute'
+          }}
           severity="error">
           <AlertTitle>Wrong Answer</AlertTitle>
           <strong>Please Try Again</strong>
         </Alert>
 
         <Alert
-          style={{visibility: this.state.rightAnswerAlertVisible ? 'visible': 'hidden'}}
+          style={{
+            display: this.state.rightAnswerAlertVisible ? 'inline-flex': 'none',
+            position: 'absolute'
+          }}
           severity="success">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Correct</AlertTitle>
           <strong>Great Job</strong>
         </Alert>
 
-        <div className="App-header">
+        <div className="App-header" style={{paddingLeft: '5%', paddingRight: '5%'}}>
           <h3>{`${this.state.question}`}</h3>
         </div>
 
