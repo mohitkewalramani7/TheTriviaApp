@@ -16,7 +16,7 @@ class Questions extends React.Component {
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.setQuestion();
   }
 
@@ -26,7 +26,7 @@ class Questions extends React.Component {
       rightAnswerAlertVisible: false
     });
 
-    this.fetchTrivia().then(result => {
+    this.fetchTriviaQuestion().then(result => {
       let questionObject = result.results[0];
       let question = questionObject['question'];
       this.setState({'question': this.decodeHtml(question)});
@@ -36,7 +36,7 @@ class Questions extends React.Component {
     })
   }
 
-  async fetchTrivia(){
+  async fetchTriviaQuestion(){
     let response = await fetch('https://opentdb.com/api.php?amount=1');
     return await response.json();
   }
@@ -68,10 +68,11 @@ class Questions extends React.Component {
   }
 
   decodeAllAnswers(allAnswers){
+    const decodedAnswers = [];
     allAnswers.forEach(answer => {
-      return this.decodeHtml(answer);
+      decodedAnswers.push(this.decodeHtml(answer));
     });
-    return allAnswers;
+    return decodedAnswers;
   }
 
   /*
@@ -107,7 +108,8 @@ class Questions extends React.Component {
 
         <Alert
           style={{
-            display: this.state.wrongAnswerAlertVisible ? "inline-flex" : "none",
+            width: '100%',
+            display: this.state.wrongAnswerAlertVisible ? '' : "none",
             position: 'absolute'
           }}
           severity="error">
@@ -117,7 +119,8 @@ class Questions extends React.Component {
 
         <Alert
           style={{
-            display: this.state.rightAnswerAlertVisible ? 'inline-flex': 'none',
+            width: '100%',
+            display: this.state.rightAnswerAlertVisible ? '' : 'none',
             position: 'absolute'
           }}
           severity="success">
