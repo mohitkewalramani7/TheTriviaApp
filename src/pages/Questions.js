@@ -2,6 +2,8 @@ import React from 'react';
 import {Button} from "@material-ui/core";
 import {Alert, AlertTitle} from '@material-ui/lab';
 
+import history from "../history";
+
 class Questions extends React.Component {
 
   constructor(props) {
@@ -174,6 +176,14 @@ class Questions extends React.Component {
             </Button>
           </div>
         </div>
+
+        <Button
+          style={{marginTop: '80px'}}
+          variant="contained"
+          color="primary"
+          onClick={() => history.push('/')}>
+          Go Back Home
+        </Button>
 
       </div>
     )
